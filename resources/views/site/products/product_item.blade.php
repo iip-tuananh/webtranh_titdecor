@@ -9,7 +9,7 @@
                 <img class="lazyload" width="350" height="350"
                     {{-- src="/site/images/lazy.png" --}}
                     src="{{ $product->image ? $product->image->path : 'https://placehold.co/350x350' }}"
-                    alt="{{$product->name}}" />
+                    alt="{{$product->name}}" loading="lazy"/>
             </a>
             @if ($product->base_price > 0 && $product->price > 0)
             <span class="smart">-
