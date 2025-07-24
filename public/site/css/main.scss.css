@@ -3379,7 +3379,19 @@ ul.tabs li.current {
     z-index: 990
 }
 
-.livechat-mes img {
+.livechat-mes svg {
     width: 48px;
     height: 48px
+}
+
+.call-hotline {
+    position: fixed;
+    bottom: 80px;
+    right: 10px;
+    z-index: 990;
+}
+
+.call-hotline svg {
+    width: 48px;
+    height: 48px;
 }
