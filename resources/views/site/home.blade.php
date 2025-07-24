@@ -74,7 +74,6 @@
 
             .section_product .block-category .list-category-child li:hover {
                 background-color: #f0f0f0;
-                padding-left: 0px;
             }
         }
     </style>
