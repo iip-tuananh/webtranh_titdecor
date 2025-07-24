@@ -677,9 +677,11 @@
         @media (max-width: 768px) {
 
             .addThis_iconContact,
-            .livechat-mes {
+            .livechat-mes,
+            .call-hotline {
                 display: none !important;
             }
+
         }
     </style>
     <div id="azt-contact-footer-outer">
