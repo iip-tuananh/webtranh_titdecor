@@ -5,6 +5,7 @@
     class Product extends BaseClass {
         no_set = [];
         all_categories = @json(\App\Model\Admin\Category::getForSelect());
+        all_units = @json(\App\Model\Common\Unit::getForSelect());
 
         before(form) {
             this.image = {};
@@ -224,6 +225,7 @@
                 person_in_charge: this.person_in_charge,
                 button_type: this.button_type,
                 gift: this.gift,
+                unit_id: this.unit_id,
             }
 
             data = jsonToFormData(data);

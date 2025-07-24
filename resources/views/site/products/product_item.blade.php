@@ -55,11 +55,11 @@
             <div class="price-box">
                 @if ($product->base_price > 0 && $product->price > 0)
                 <span class="price">{{ formatCurrency($product->price) }}₫</span>
-                <span class="compare-price">{{ formatCurrency($product->base_price) }}₫</span>
+                <span class="compare-price">{{ formatCurrency($product->base_price) }}₫ {{ $product->unit_id ? ' / ' . $product->unit->name : '' }}</span>
                 @elseif ($product->price > 0 && $product->base_price == 0)
-                <span class="price">{{ formatCurrency($product->price) }}₫</span>
+                <span class="price">{{ formatCurrency($product->price) }}₫ {{ $product->unit_id ? ' / ' . $product->unit->name : '' }}</span>
                 @elseif ($product->price == 0 && $product->base_price > 0)
-                <span class="price">{{ formatCurrency($product->base_price) }}₫</span>
+                <span class="price">{{ formatCurrency($product->base_price) }}₫ {{ $product->unit_id ? ' / ' . $product->unit->name : '' }}</span>
                 @else
                 <span class="price">Liên hệ</span>
                 @endif

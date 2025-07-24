@@ -222,6 +222,15 @@
                 </strong>
             </span>
         </div>
+        <div class="form-group custom-group mb-4">
+            <label class="form-label">Đơn vị tính</label>
+            <select class="form-control" select2 style="width: 100%;" name="status" ng-model="form.unit_id">
+                <option value="">Chọn đơn vị tính</option>
+                <option value="1" ng-repeat="unit in form.all_units" ng-value="unit.id" ng-selected="form.unit_id == unit.id">
+                    <% unit.name %>
+                </option>
+            </select>
+        </div>
         {{-- <div class="form-group custom-group mb-4">
             <label class="form-label">Hoa hồng (người mua hàng có thể nhận) / sản phẩm</label>
             <input class="form-control " type="text" ng-model="form.revenue_price" disabled>

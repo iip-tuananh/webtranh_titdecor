@@ -70,6 +70,9 @@ class ProductController extends Controller
             ->addColumn('category_special', function ($object) {
                 return $object->category_specials->implode('name', ', ');
             })
+            ->editColumn('unit_id', function ($object) {
+                return $object->unit ? $object->unit->name : '';
+            })
             ->editColumn('tags', function ($object) {
 				return $object->tags->map(function ($tag) {
 					return '<span class="badge badge-light" style="font-size: 12px;">'.$tag->name.'</span>';
@@ -140,6 +143,7 @@ class ProductController extends Controller
             $object->person_in_charge = $request->person_in_charge;
             $object->button_type = $request->button_type ?? 0;
             $object->gift = $request->gift;
+            $object->unit_id = $request->unit_id;
 			$object->save();
 
 			FileHelper::uploadFile($request->image, 'products', $object->id, ThisModel::class, 'image',99);
@@ -223,6 +227,7 @@ class ProductController extends Controller
             $object->person_in_charge = $request->person_in_charge;
             $object->button_type = $request->button_type ?? 0;
             $object->gift = $request->gift;
+            $object->unit_id = $request->unit_id;
 			$object->save();
 
 			if($request->image) {

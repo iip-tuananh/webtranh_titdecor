@@ -10,6 +10,74 @@
 @endsection
 @section('css')
     <link href="/site/css/index.scss.css?1743048451127" rel="stylesheet" type="text/css" media="all" />
+    <style>
+        .section_product .block-category .list-category-child {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 10px;
+        }
+
+        .section_product .block-category .list-category-child li {
+            padding-top: 8px;
+            padding-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .section_product .block-category .list-category-child li:hover {
+            background-color: #f0f0f0;
+            padding-left: 10px;
+        }
+
+        .section_product .block-category .list-category-child li a {
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        @media (max-width: 991px) {
+            .section_product .block-category .category-image {
+                display: none;
+            }
+
+            .section_product .block-category .scroll-wrapper {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .section_product .block-category .scroll-wrapper::-webkit-scrollbar {
+                height: 4px;
+                display: none;
+            }
+
+            .section_product .block-category .scroll-wrapper::-webkit-scrollbar-thumb {
+                background-color: #ccc;
+                border-radius: 2px;
+            }
+
+            .section_product .block-category .scroll-wrapper::-webkit-scrollbar-track {
+                background-color: transparent;
+            }
+
+            .section_product .block-category .list-category-child {
+                display: flex;
+                flex-wrap: nowrap;
+                gap: 10px;
+            }
+
+            .section_product .block-category .list-category-child li {
+                border: 1px solid #c1c1c1c1;
+                border-radius: 5px;
+                text-align: center;
+                padding: 8px 10px;
+                flex: 0 0 auto;
+                min-width: 120px;
+            }
+
+            .section_product .block-category .list-category-child li:hover {
+                background-color: #f0f0f0;
+                padding-left: 0px;
+            }
+        }
+    </style>
 @endsection
 @section('content')
     <section class="section_slider">
@@ -137,7 +205,8 @@
                         </svg>
                         <span class="text">Kết thúc sau:</span>
                         <div class="time" data-countdown="countdown"
-                            data-date="{{ \Carbon\Carbon::parse($categorySpecialFlashsale->end_date)->format('m-d-Y-H-i-s') }}"></div>
+                            data-date="{{ \Carbon\Carbon::parse($categorySpecialFlashsale->end_date)->format('m-d-Y-H-i-s') }}">
+                        </div>
                     </div>
                 </div>
                 <div class="block-content">
@@ -182,7 +251,7 @@
         }
     </script>
     <script src="/site/js/flashsale.js?1743048451127" defer></script>
-    @foreach ($categorySpecial as $category)
+    @foreach ($productCategories as $category)
         @if ($category->products->count() > 0)
             <div class="section_product_new section_product">
                 <div class="container">
@@ -195,7 +264,29 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-right col-lg-12 col-12">
+                        <div class="col-left col-lg-2 col-12">
+                            <div class="block-category">
+                                <div class="scroll-wrapper">
+                                    <ul class="list-category-child">
+                                        @foreach ($category->childs as $child)
+                                            <li>
+                                                <a href="{{ route('front.show-product-category', ['categorySlug' => $child->slug]) }}"
+                                                    title="{{ $child->name }}">{{ $child->name }}</a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                                <div class="category-image">
+                                    <a href="{{ route('front.show-product-category', ['categorySlug' => $category->slug]) }}"
+                                        title="{{ $category->name }}">
+                                        <img src="{{ $category->image ? $category->image->path : 'https://placehold.co/350x450' }}"
+                                            alt="{{ $category->name }}">
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-right col-lg-10 col-12">
                             <div class="block-product relative">
                                 <div class="product-new-swiper swiper-container">
                                     <div class="swiper-wrapper">

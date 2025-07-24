@@ -128,6 +128,7 @@
                 {data: 'name', title: 'Tên'},
                 {data: 'base_price', title: "Đơn giá chưa giảm"},
                 {data: 'price', title: "Đơn giá bán"},
+                {data: 'unit_id', title: "Đơn vị tính"},
                 {data: 'cate_id', title: 'Danh mục'},
                 {data: 'category_special', title: 'Danh mục đặc biệt'},
                 {data: 'tags', title: 'Thẻ tags phân loại', style: 'width: 15%'},

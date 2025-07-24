@@ -46,10 +46,10 @@ class FrontController extends Controller
     public function homePage()
     {
         $data['banners'] = Banner::with(['image'])->where('position', 1)->get();
-        $data['reviews'] = Review::query()->with(['image'])->orderBy('id', 'desc')->get();
-        $data['smallBanner'] = Banner::with(['image'])->where('position', 2)->orderBy('id', 'desc')->first();
-        $data['partners'] = Partner::with(['image'])->limit(3)->get();
-        $data['newProducts'] = Product::with(['image'])->where('status', 1)->limit(6)->orderBy('id', 'DESC')->inRandomOrder()->get();
+        // $data['reviews'] = Review::query()->with(['image'])->orderBy('id', 'desc')->get();
+        // $data['smallBanner'] = Banner::with(['image'])->where('position', 2)->orderBy('id', 'desc')->first();
+        // $data['partners'] = Partner::with(['image'])->limit(3)->get();
+        // $data['newProducts'] = Product::with(['image'])->where('status', 1)->limit(6)->orderBy('id', 'DESC')->inRandomOrder()->get();
         $data['categorySpecialPost'] = CategorySpecial::query()->with([
             'posts' => function ($q) {
                 $q->where('status', 1);
@@ -59,26 +59,26 @@ class FrontController extends Controller
             ->where('type', 20)
             ->where('show_home_page', 1)
             ->orderBy('order_number')->get();
-        $data['categorySpecial'] = CategorySpecial::query()->with([
-            'products' => function ($q) {
-                $q->with([
-                    'image',
-                    'galleries' => function ($q) {
-                        $q->select(['id', 'product_id', 'sort'])
-                            ->with(['image'])
-                            ->orderBy('sort', 'ASC');
-                    },
-                ])->where('status', 1)->inRandomOrder();
-            }
-        ])
-            ->has('products')
-            ->where('type', 10)
-            ->where('show_home_page', 1)
-            ->where('order_number', '!=', 1)
-            ->orderBy('order_number')->get()->map(function ($query) {
-                $query->setRelation('products', $query->products->where('status', 1)->take(12));
-                return $query;
-            });
+        // $data['categorySpecial'] = CategorySpecial::query()->with([
+        //     'products' => function ($q) {
+        //         $q->with([
+        //             'image',
+        //             'galleries' => function ($q) {
+        //                 $q->select(['id', 'product_id', 'sort'])
+        //                     ->with(['image'])
+        //                     ->orderBy('sort', 'ASC');
+        //             },
+        //         ])->where('status', 1)->inRandomOrder();
+        //     }
+        // ])
+        //     ->has('products')
+        //     ->where('type', 10)
+        //     ->where('show_home_page', 1)
+        //     ->where('order_number', '!=', 1)
+        //     ->orderBy('order_number')->get()->map(function ($query) {
+        //         $query->setRelation('products', $query->products->where('status', 1)->take(12));
+        //         return $query;
+        //     });
 
         $data['categorySpecialFlashsale'] = CategorySpecial::query()
             ->has('products')
@@ -100,27 +100,33 @@ class FrontController extends Controller
                 }
             ])
             ->first();
-        $data['newBlogs'] = Post::with(['image'])->where(['status' => 1])
-            ->orderBy('id', 'DESC')
-            ->select(['id', 'name', 'slug', 'intro', 'created_at'])
-            ->limit(10)->get();
 
-        $data['productCategories'] = Category::query()->where('show_home_page', 1)->orderBy('sort_order')->get();
+        $productCategories = Category::query()->with([
+            'childs' => function ($q) {
+                $q->with([
+                    'childs'
+                ]);
+            }
+        ])
+        ->where('show_home_page', 1)
+        ->orderBy('sort_order')
+        ->get();
+        foreach ($productCategories as $category) {
+            $category_parent_id = $category->parent ? $category->parent->id : null;
+            $arr_category_id = array_merge($category->childs->pluck('id')->toArray(), [$category->id, $category_parent_id]);
+            if ($category->childs) {
+                foreach ($category->childs as $child) {
+                    $arr_category_id = array_merge($arr_category_id, $child->childs->pluck('id')->toArray());
+                }
+            }
+            $category->products = Product::query()->where('status', 1)->whereIn('cate_id', $arr_category_id)->inRandomOrder()->limit(12)->select(['id', 'name', 'slug', 'price', 'base_price', 'unit_id', 'cate_id'])->get();
+        }
+        $data['productCategories'] = $productCategories;
+
         // $data['vouchers'] = Voucher::query()->where('status', 1)->where('quantity', '>', 0)->where('to_date', '>=', now())->orderBy('created_at', 'desc')->get();
         // block khối ảnh cuối trang
-        $block = Block::query()->find(1);
-        $data['block'] = $block;
-
-        // $data['user'] = null;
-        // $data['new_orders'] = 0;
-        // $data['pending_orders'] = 0;
-        // $data['success_orders'] = 0;
-        // if (\Auth::guard('client')->check()) {
-        //     $data['user'] = \App\Model\Common\User::with(['image'])->where('id', \Auth::guard('client')->user()->id)->select(['id', 'name'])->first();
-        //     $data['new_orders'] = Order::query()->where('customer_email', \Auth::guard('client')->user()->email)->orderBy('id', 'desc')->where('status', Order::MOI)->get()->count();
-        //     $data['pending_orders'] = Order::query()->where('customer_email', \Auth::guard('client')->user()->email)->orderBy('id', 'desc')->where('status', Order::DUYET)->get()->count();
-        //     $data['success_orders'] = Order::query()->where('customer_email', \Auth::guard('client')->user()->email)->orderBy('id', 'desc')->where('status', Order::THANH_CONG)->get()->count();
-        // }
+        // $block = Block::query()->find(1);
+        // $data['block'] = $block;
 
         return view('site.home', $data);
     }
@@ -238,7 +244,7 @@ class FrontController extends Controller
         $sort = $request->get('sort') ?: 'lasted';
         $tag = $request->get('tag') ?: null;
         $request_product_ids = [];
-        if($tag) {
+        if ($tag) {
             $code_tags = $tag ? explode(',', $tag) : [];
             $tag_ids = Tag::query()->whereIn('code', $code_tags)->pluck('id')->toArray();
             $request_product_ids = Tagable::query()->whereIn('tag_id', $tag_ids)->where('tagable_type', Product::class)->pluck('tagable_id')->toArray();
@@ -252,39 +258,39 @@ class FrontController extends Controller
                     $arr_category_id = array_merge($arr_category_id, $child->childs->pluck('id')->toArray());
                 }
             }
-            $attributes = Attribute::query()->with(['tags' => function($q) use ($arr_category_id) {
-                $q->with(['products' => function($q) use ($arr_category_id) {
+            $attributes = Attribute::query()->with(['tags' => function ($q) use ($arr_category_id) {
+                $q->with(['products' => function ($q) use ($arr_category_id) {
                     $q->where('status', 1)->whereIn('cate_id', $arr_category_id);
                 }]);
             }])->get();
 
             $products = Product::with([
-                'product_rates' => function($q) {
+                'product_rates' => function ($q) {
                     $q->where('status', 2);
                 }
             ])
-            ->where(function($q) use ($request_product_ids) {
-                if(!empty($request_product_ids)) {
-                    $q->whereIn('id', array_unique($request_product_ids));
-                }
-            })
-            ->where('status', 1)->whereIn('cate_id', $arr_category_id)->orderBy('created_at', 'desc')->paginate(20);
+                ->where(function ($q) use ($request_product_ids) {
+                    if (!empty($request_product_ids)) {
+                        $q->whereIn('id', array_unique($request_product_ids));
+                    }
+                })
+                ->where('status', 1)->whereIn('cate_id', $arr_category_id)->orderBy('created_at', 'desc')->paginate(20);
         } else {
             $category = CategorySpecial::findBySlug($categorySlug);
             $arr_product_ids = $category->products()->pluck('product_id')->toArray();
             $products = $category->products()->with([
-                'product_rates' => function($q) {
+                'product_rates' => function ($q) {
                     $q->where('status', 2);
                 }
             ])
-            ->where(function($q) use ($request_product_ids) {
-                if(!empty($request_product_ids)) {
-                    $q->whereIn('products.id', $request_product_ids);
-                }
-            })
-            ->where('products.status', 1)->orderBy('products.created_at', 'desc')->paginate(20);
-            $attributes = Attribute::query()->with(['tags' => function($q) use ($arr_product_ids) {
-                $q->with(['products' => function($q) use ($arr_product_ids) {
+                ->where(function ($q) use ($request_product_ids) {
+                    if (!empty($request_product_ids)) {
+                        $q->whereIn('products.id', $request_product_ids);
+                    }
+                })
+                ->where('products.status', 1)->orderBy('products.created_at', 'desc')->paginate(20);
+            $attributes = Attribute::query()->with(['tags' => function ($q) use ($arr_product_ids) {
+                $q->with(['products' => function ($q) use ($arr_product_ids) {
                     $q->where('products.status', 1)->whereIn('products.id', array_unique($arr_product_ids));
                 }]);
             }])->get();
@@ -496,10 +502,10 @@ class FrontController extends Controller
             ->limit(6)->get();
 
         $data['productCategories'] = Category::query()->with([
-                'childs' => function ($query) {
-                    $query->with(['childs']);
-                }
-            ])
+            'childs' => function ($query) {
+                $query->with(['childs']);
+            }
+        ])
             ->where(['type' => 1, 'parent_id' => 0])
             ->orderBy('sort_order')
             ->get();
@@ -555,9 +561,9 @@ class FrontController extends Controller
                 $query->with(['childs']);
             }
         ])
-        ->where(['type' => 1, 'parent_id' => 0])
-        ->orderBy('sort_order')
-        ->get();
+            ->where(['type' => 1, 'parent_id' => 0])
+            ->orderBy('sort_order')
+            ->get();
 
         return view('site.blogs.detail', $data);
     }

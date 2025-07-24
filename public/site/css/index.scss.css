@@ -449,7 +449,8 @@
 .section_product .block-title {
     display: flex;
     align-items: center;
-    justify-content: space-between
+    justify-content: space-between;
+    border-bottom: 1px solid #c1c1c1c1;
 }
 
 .section_product .block-title .block-view .cta-view {
@@ -457,11 +458,12 @@
     font-size: 12px;
     font-weight: 600;
     display: block;
-    padding: 15px 30px;
+    padding: 11px 22px;
     border: 1px solid #DEDACE;
     border-radius: 50px;
     text-transform: uppercase;
-    letter-spacing: 2px
+    letter-spacing: 2px;
+    margin-bottom: 5px;
 }
 
 .section_product .block-title .block-view .cta-view:hover {
@@ -478,7 +480,8 @@
 
 @media (max-width: 767px) {
     .section_product .block-title {
-        display:block
+        display:block;
+        margin-bottom: 6px;
     }
 }
 
@@ -848,4 +851,10 @@
     font-size: 16px;
     font-weight: bold;
     color: #333
+}
+
+@media (max-width: 991px) {
+    .section_service{
+        display: none !important;
+    }
 }

@@ -17,6 +17,7 @@ use App\Helpers\FileHelper;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use File as FileSystem;
+use App\Model\Common\Unit;
 
 class Product extends BaseModel
 {
@@ -135,6 +136,11 @@ class Product extends BaseModel
     public function vouchers()
     {
         return $this->belongsToMany(Voucher::class, 'product_vouchers', 'product_id', 'voucher_id');
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class, 'unit_id');
     }
 
     public function getLinkAttribute()

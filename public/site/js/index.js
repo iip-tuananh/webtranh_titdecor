@@ -58,7 +58,7 @@ $(window).on('scroll  mousemove touchstart',function(){
 				loop: false,
 				grabCursor: true,
 				spaceBetween: 20,
-				watchSlidesVisibility: true, 
+				watchSlidesVisibility: true,
 				watchSlidesProgress: true,
 				pagination: {
 					el: '.brand-swiper .swiper-pagination',
@@ -116,12 +116,12 @@ $(window).on('scroll  mousemove touchstart',function(){
 				},
 				breakpoints: {
 					300: {
-						slidesPerView: 1,
-						spaceBetween: 0
+						slidesPerView: 1.2,
+						spaceBetween: 10
 					},
 					500: {
-						slidesPerView: 1,
-						spaceBetween: 0
+						slidesPerView: 1.2,
+						spaceBetween: 10
 					},
 					640: {
 						slidesPerView: 2,
@@ -211,7 +211,7 @@ $(window).on('scroll  mousemove touchstart',function(){
 					$this2.addClass('current');
 					etabs.find("."+tab_id).addClass('current');
 					if(!$this2.hasClass('has-content')){
-						$this2.addClass('has-content');		
+						$this2.addClass('has-content');
 						getContentTab(url,"."+ datasection+" ."+tab_id,view);
 					}
 				});
@@ -240,7 +240,7 @@ $(window).on('scroll  mousemove touchstart',function(){
 				var str = $(this).parent().find('.tab-titlexs').attr('data-tab'),
 					res = str.replace("tab-", ""),
 					datasection = $(this).closest('.not-dqtab').attr('data-section'),
-					res = Number(res);	
+					res = Number(res);
 				if(res > 1){
 					var current = res - 1;
 				}else{
@@ -260,8 +260,8 @@ $(window).on('scroll  mousemove touchstart',function(){
 						url = $this3.attr('data-url');
 						tab_id = $this3.attr('data-tab');
 						if(!$this3.hasClass('has-content')){
-							$this3.addClass('has-content');	
-							getContentTab(url,"."+ datasection+" ."+tab_id,view);				
+							$this3.addClass('has-content');
+							getContentTab(url,"."+ datasection+" ."+tab_id,view);
 						}
 					}
 				})
@@ -328,10 +328,10 @@ $(window).on('scroll  mousemove touchstart',function(){
 								})
 							},100);
 							awe_lazyloadImage();
-							$(selector+' .add_to_cart').click(function(e){	
-								e.preventDefault();		
+							$(selector+' .add_to_cart').click(function(e){
+								e.preventDefault();
 								var $this = $(this);
-								var form = $this.parents('form');	
+								var form = $this.parents('form');
 								$.ajax({
 									type: 'POST',
 									url: '/cart/add.js',
